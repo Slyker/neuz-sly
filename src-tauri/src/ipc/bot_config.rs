@@ -543,11 +543,11 @@ pub struct IdleDisconnect {
 }
 
 impl IdleDisconnect {
-    pub fn enabled(&self) -> bool {
+    pub fn is_enabled(&self) -> bool {
         self.enabled.unwrap_or(false)
     }
 
-    pub fn timeout(&self) -> u64 {
+    pub fn get_timeout(&self) -> u64 {
         self.timeout.unwrap_or(3000)
     }
 }
