@@ -138,6 +138,15 @@ export type ShoutConfigModel = Partial<{
     afk_ready_to_disconnect: boolean,
 }>
 
+export type IdleDisconnectConfigModel =  Partial<{
+    enabled: boolean,
+    timeout: number,
+}>
+export type CommonConfigModel =  Partial<{
+    idle_disconnect: IdleDisconnectConfigModel,
+    on_death_disconnect: boolean,
+}>
+
 export type BotConfigModel = {
     change_id: number,
     is_running: boolean,
@@ -145,6 +154,9 @@ export type BotConfigModel = {
     farming_config: FarmingConfigModel,
     support_config: SupportConfigModel,
     shout_config: ShoutConfigModel,
+
+    common_config: CommonConfigModel,
 }
 
 export type AnyConfig = FarmingConfigModel | SupportConfigModel | ShoutConfigModel
+

@@ -1,6 +1,6 @@
-use std::{fmt, fs::File, time::Instant};
+use std::{ fmt, fs::File, time::Instant };
 
-use serde::{Deserialize, Serialize};
+use serde::{ Deserialize, Serialize };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SlotType {
@@ -69,16 +69,16 @@ impl SlotBar {
         slot_type: SlotType,
         threshold: Option<u32>,
         last_slots_usage: [[Option<Instant>; 10]; 9],
-        slot_bar_index: usize,
+        slot_bar_index: usize
     ) -> Option<(usize, usize)> {
         self.slots()
             .iter()
             .enumerate()
             .filter(|(index, slot)| {
-                slot.slot_type == slot_type
-                    && slot.slot_enabled
-                    && slot.slot_threshold.unwrap_or(100) >= threshold.unwrap_or(0)
-                    && last_slots_usage[slot_bar_index][*index].is_none()
+                slot.slot_type == slot_type &&
+                    slot.slot_enabled &&
+                    slot.slot_threshold.unwrap_or(100) >= threshold.unwrap_or(0) &&
+                    last_slots_usage[slot_bar_index][*index].is_none()
             })
             .min_by(|x, y| x.1.slot_threshold.cmp(&y.1.slot_threshold))
             //.choose(rng)
@@ -90,15 +90,16 @@ impl SlotBar {
         &self,
         slot_type: SlotType,
         slot_bar_index: usize,
-        last_slots_usage: [[Option<Instant>; 10]; 9],
+        last_slots_usage: [[Option<Instant>; 10]; 9]
     ) -> Vec<(usize, usize)> {
         let mut all_valid_slots: Vec<(usize, usize)> = Vec::new();
         for (index, current_slot) in self.slots().iter().enumerate() {
-            if current_slot.slot_enabled
-                && current_slot.slot_type == slot_type
-                && last_slots_usage[slot_bar_index][index].is_none()
+            if
+                current_slot.slot_enabled &&
+                current_slot.slot_type == slot_type &&
+                last_slots_usage[slot_bar_index][index].is_none()
             {
-                all_valid_slots.push((slot_bar_index, index))
+                all_valid_slots.push((slot_bar_index, index));
             }
         }
         all_valid_slots
@@ -143,12 +144,13 @@ pub enum BotMode {
 
 impl ToString for BotMode {
     fn to_string(&self) -> String {
-        match self {
-            BotMode::Farming => "farming",
-            BotMode::Support => "support",
-            BotMode::AutoShout => "auto_shout",
-        }
-        .to_string()
+        (
+            match self {
+                BotMode::Farming => "farming",
+                BotMode::Support => "support",
+                BotMode::AutoShout => "auto_shout",
+            }
+        ).to_string()
     }
 }
 
@@ -291,15 +293,17 @@ impl FarmingConfig {
     pub fn get_all_usable_slot_for_type(
         &self,
         slot_type: SlotType,
-        last_slots_usage: [[Option<Instant>; 10]; 9],
+        last_slots_usage: [[Option<Instant>; 10]; 9]
     ) -> Vec<(usize, usize)> {
         let mut all_valid_slots: Vec<(usize, usize)> = Vec::new();
         for slot_bar_index in 0..9 {
-            let result = self.slot_bars()[slot_bar_index].get_all_usable_slots_for_index(
-                slot_type,
-                slot_bar_index,
-                last_slots_usage,
-            );
+            let result = self
+                .slot_bars()
+                [slot_bar_index].get_all_usable_slots_for_index(
+                    slot_type,
+                    slot_bar_index,
+                    last_slots_usage
+                );
             for found_skill in result {
                 all_valid_slots.push((slot_bar_index, found_skill.1));
             }
@@ -312,15 +316,12 @@ impl FarmingConfig {
         &self,
         slot_type: SlotType,
         threshold: Option<u32>,
-        last_slots_usage: [[Option<Instant>; 10]; 9],
+        last_slots_usage: [[Option<Instant>; 10]; 9]
     ) -> Option<(usize, usize)> {
         for n in 0..9 {
-            let found_index = self.slot_bars()[n].get_usable_slot_index(
-                slot_type,
-                threshold,
-                last_slots_usage,
-                n,
-            );
+            let found_index = self
+                .slot_bars()
+                [n].get_usable_slot_index(slot_type, threshold, last_slots_usage, n);
             if let Some(found_index) = found_index {
                 return Some(found_index);
             }
@@ -394,15 +395,12 @@ impl SupportConfig {
         &self,
         slot_type: SlotType,
         threshold: Option<u32>,
-        last_slots_usage: [[Option<Instant>; 10]; 9],
+        last_slots_usage: [[Option<Instant>; 10]; 9]
     ) -> Option<(usize, usize)> {
         for n in 0..9 {
-            let found_index = self.slot_bars()[n].get_usable_slot_index(
-                slot_type,
-                threshold,
-                last_slots_usage,
-                n,
-            );
+            let found_index = self
+                .slot_bars()
+                [n].get_usable_slot_index(slot_type, threshold, last_slots_usage, n);
             if let Some(found_index) = found_index {
                 return Some(found_index);
             }
@@ -414,16 +412,18 @@ impl SupportConfig {
     pub fn get_all_usable_slot_for_type(
         &self,
         slot_type: SlotType,
-        last_slots_usage: [[Option<Instant>; 10]; 9],
+        last_slots_usage: [[Option<Instant>; 10]; 9]
     ) -> Vec<(usize, usize)> {
         let mut all_valid_slots: Vec<(usize, usize)> = Vec::new();
 
         for slot_bar_index in 0..9 {
-            let result = self.slot_bars()[slot_bar_index].get_all_usable_slots_for_index(
-                slot_type,
-                slot_bar_index,
-                last_slots_usage,
-            );
+            let result = self
+                .slot_bars()
+                [slot_bar_index].get_all_usable_slots_for_index(
+                    slot_type,
+                    slot_bar_index,
+                    last_slots_usage
+                );
             for found_skill in result {
                 all_valid_slots.push((slot_bar_index, found_skill.1));
             }
@@ -476,6 +476,8 @@ pub struct BotConfig {
     farming_config: FarmingConfig,
     support_config: SupportConfig,
     shout_config: ShoutConfig,
+
+    common_config: CommonConfig,
 }
 
 impl BotConfig {
@@ -531,5 +533,36 @@ impl BotConfig {
         } else {
             Self::default()
         }
+    }
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct IdleDisconnect {
+    enabled: Option<bool>,
+    timeout: Option<u64>,
+}
+
+impl IdleDisconnect {
+    pub fn enabled(&self) -> bool {
+        self.enabled.unwrap_or(false)
+    }
+
+    pub fn timeout(&self) -> u64 {
+        self.timeout.unwrap_or(3000)
+    }
+}
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct CommonConfig {
+    idle_disconnect: IdleDisconnect,
+    on_death_disconnect: Option<bool>,
+}
+
+impl CommonConfig {
+    pub fn idle_disconnect(&self) -> IdleDisconnect {
+        self.idle_disconnect.clone()
+    }
+
+    pub fn on_death_disconnect(&self) -> bool {
+        self.on_death_disconnect.unwrap_or(true)
     }
 }
