@@ -558,11 +558,11 @@ pub struct CommonConfig {
 }
 
 impl CommonConfig {
-    pub fn idle_disconnect(&self) -> IdleDisconnect {
+    pub fn get_idle_disconnect(&self) -> IdleDisconnect {
         self.idle_disconnect.clone()
     }
 
-    pub fn on_death_disconnect(&self) -> bool {
+    pub fn is_on_death_disconnect(&self) -> bool {
         self.on_death_disconnect.unwrap_or(true)
     }
 }
