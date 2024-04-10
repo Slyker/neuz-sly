@@ -287,13 +287,6 @@ async fn create_window(profile_id: String, app_handle: tauri::AppHandle) {
     drop(main_window.set_title(format!("{} Neuz | MadrigalStreetCartel", profile_id).as_str()));
     //window.once_global("tauri://close-requested", move |_| app_handle.restart());
 }
-fn should_disconnect_on_death(config: &BotConfig) -> bool {
-    return match config.mode().unwrap() {
-        BotMode::Farming => config.farming_config().on_death_disconnect(),
-        BotMode::Support => config.support_config().on_death_disconnect(),
-        BotMode::AutoShout => true,
-    };
-}
 
 #[tauri::command]
 fn start_bot(profile_id: String, state: tauri::State<AppState>, app_handle: tauri::AppHandle) {
@@ -497,12 +490,12 @@ fn start_bot(profile_id: String, state: tauri::State<AppState>, app_handle: taur
                     return;
                 }
                 let is_alive = image_analyzer.client_stats.is_alive;
+                let should_disconnect = *&config.common_config().is_on_death_disconnect();
                 let return_earlier = match is_alive {
                     AliveState::StatsTrayClosed => true,
                     AliveState::Alive => {
                         if !frontend_info_mut.is_alive() {
                             frontend_info_mut.set_is_alive(true);
-                            let should_disconnect = should_disconnect_on_death(config);
                             if !should_disconnect {
                                 // close chat after beign rez
                                 eval_send_key(&window, "Escape", KeyMode::Press);
@@ -513,7 +506,6 @@ fn start_bot(profile_id: String, state: tauri::State<AppState>, app_handle: taur
                     }
                     AliveState::Dead => {
                         if frontend_info_mut.is_alive() {
-                            let should_disconnect = should_disconnect_on_death(config);
                             if should_disconnect {
                                 app_handle.exit(0);
                             }
