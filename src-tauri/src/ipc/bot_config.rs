@@ -498,6 +498,10 @@ impl BotConfig {
         self
     }
 
+    pub fn common_config(&self) -> &CommonConfig {
+        &self.common_config
+    }
+
     pub fn farming_config(&self) -> &FarmingConfig {
         &self.farming_config
     }
