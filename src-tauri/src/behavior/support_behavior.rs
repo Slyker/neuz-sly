@@ -188,11 +188,6 @@ impl SupportBehavior<'_> {
     fn is_target_in_range(&mut self, config: &SupportConfig, image: &mut ImageAnalyzer) -> bool {
         let distance = self.get_target_distance(image);
         if let Some(distance) = distance {
-            if distance == 9999 {
-                self.move_circle_pattern();
-                return false;
-            }
-
             if distance > (config.get_max_main_distance() as i32) {
                 if let Some(last_target_distance) = self.last_target_distance {
                     if distance > (config.get_max_main_distance() as i32) * 2 {
